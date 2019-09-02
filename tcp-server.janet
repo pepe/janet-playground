@@ -1,5 +1,6 @@
 # Example tcp server. All code taken from juv test
 (import uv)
+(import proto)
 
 (uv/enter-loop
   (def server (uv/tcp/new))
@@ -11,26 +12,19 @@
               (def client (uv/tcp/new))
               (:accept server client)
               (yield (:write client "Hi, I will repeat anything you will say!\n"))
-              (yield (:write client "exit: I will stop talking with you.\n"))
-              (yield (:write client "die: I will stop.\n"))
+              (yield (:write client "-end-"))
               (:read-start client)
               (while true
-                (def chunk (string/trim (yield)))
-                (case chunk
-                  "exit"
+                (def chunk (yield))
+                (if (peg/match proto/g chunk)
                   (do
                     (:read-stop client)
                     (print "---done!---")
                     (break))
-                  "die"
-                  (do 
-                    (:read-stop client)
-                    (print "---died!---")
-                    (os/exit 0))
                   (do
-                    (print "Received " chunk)
                     (yield (:write client "You said "))
                     (yield (:write client chunk))
-                    (yield (:write client "\n"))))))))
+                    (yield (:write client "\n"))
+                    (yield (:write client "-end-"))))))))
 
 
