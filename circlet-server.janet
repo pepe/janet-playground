@@ -1,4 +1,4 @@
-# Example http server. All code taken from littleserver
+# Example http server. All code taken from https://github.com/bakpakin/littleserver
 (import circlet)
 
 (defn handler [req]
