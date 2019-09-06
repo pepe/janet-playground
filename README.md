@@ -20,7 +20,10 @@ cause both issued messages are sent as one and then there is empty message
 (I guess) which server does not like.
 
 ## TODO:
-- [x] add usage
+- [ ] add path example
+- [ ] add json example
+- [ ] add SQLite example
 - [ ] add links
+- [x] add usage
 - [x] add tcp client example
 - [x] add circlet example
