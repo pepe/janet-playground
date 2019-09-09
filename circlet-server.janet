@@ -13,7 +13,7 @@
 
 (def home-success (-> "Hello from the Janet's Home" html success))
 
-(defn home-handler [req] home-success) # as static as possible
+(defn home-handler [&] home-success) # as static as possible
 
 (defn playground-handler [req]
   (set counter (inc counter))
