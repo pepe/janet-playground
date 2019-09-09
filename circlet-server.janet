@@ -1,20 +1,34 @@
 # Example http server. All code taken from https://github.com/bakpakin/littleserver
 (import circlet)
 
-(defn handler [req]
-  (def body "<!doctype html><html><body><h1>Hello from the Janet's playground.</h1></body></html>")
-  {:status 200
-   :headers {"Content-Type" "text/html"}
-   :body body} )
-
-(defn not-found [&]
-  (def body "<!doctype html><html><body>Not Found.</body></html>")
-  {:status 404
+(defn success [body]
+ {:status 200
    :headers {"Content-Type" "text/html"}
    :body body})
 
+(var counter 0)
+
+(defn html [body]
+ (string "<!doctype html><html><body><h1>" body "</h1></body></html>") )
+
+(def home-success (-> "Hello from the Janet's Home" html success))
+
+(defn home-handler [req] home-success) # as static as possible
+
+(defn playground-handler [req]
+  (set counter (inc counter))
+  (def page (html (string "Hello from the Janet's Playground. For the " counter ". time.")))
+  (success page))
+
+(defn not-found [&]
+  (def page (html "Not Found."))
+  {:status 404
+   :headers {"Content-Type" "text/html"}
+   :body page})
+
 (def routes
-  {"/playground" handler
+  {"/" home-handler
+   "/playground" playground-handler
    :default not-found})
 
 # Now build our server
