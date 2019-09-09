@@ -2,15 +2,15 @@
   "Parses cookies from request into table under :cookies key"
   [nextmw]
   (fn [req]
-    (def cookies-str (get-in req [:headers "Cookie"]))
-    (nextmw 
-      (put req :cookies
-           (if cookies-str
-             (->> cookies-str
-                  (string/split ";") 
-                  (map |(string/split "=" $))
-                  flatten
-                  (map string/trim)
-                  splice
-                  table)
-             {})))))
+    (-> req
+      (put :cookies
+           (or
+             (-?>> [:headers "Cookie"] 
+                   (get-in req) 
+                   (string/split ";") 
+                   (map |(string/split "=" $)) 
+                   flatten 
+                   (map string/trim) 
+                   (apply table))
+             {}))
+     nextmw)))
