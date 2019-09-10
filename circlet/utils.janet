@@ -1,12 +1,12 @@
-(defn response [code body headers]
- {:status code
-  :headers headers
-  :body body})
-
-(defn success [body &opt headers]
+(defn response [code body &opt headers]
   (default headers @{})
   (let [headers (merge {"Content-Type" "text/html"} headers)]
-   (response 200 body headers)))
+    {:status code
+     :headers headers
+     :body body}))
+
+(defn success [body &opt headers]
+  (response 200 body headers))
 
 (defn set-cookie 
   "Returns map with cookie set"
