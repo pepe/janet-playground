@@ -29,12 +29,12 @@
 (def routes
   "these are our routes"
   {"/" home-handler
-   "/playground" (cm/cookies-parser playground-handler)
+   "/playground" (-> playground-handler cm/cookies circlet/logger)
    :default not-found})
 
 # build our server
 (circlet/server 
   (-> routes
       circlet/router
-      circlet/logger)
+      )
   8130)
