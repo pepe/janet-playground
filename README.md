@@ -5,25 +5,62 @@ almost nothing to see here now.
 
 ## Usage
 
-You will need Jane programming language installed on your computer.
+You will need [Janet] programming language installed on your computer.
 
 Clone this repo, and `cd` to it. Then run `[sudo] jpm deps` do download 
 dependencies.
 
-After install is done, run simple echo server with `janet tcp-server.janet`.
-Now you can connect to it with `telnet localhost 8120`. You will receive
-instruction for server controll.
+### TCP communication
+
+You can run simple echo server with `janet tcp-server.janet`. Server is 
+implemented with [juv]. 
+
+You can connect to it with `telnet localhost 8120`. You will receive instruction
+for server controll. Protocol is defined with [PEG] from [Janet] standart 
+library in file `proto.janet`.
 
 Second approach is to run `janet tcp-client.janet` which should communicate with
-the server. But due to my lack of knowledge about the TCP protocol server errors
-cause both issued messages are sent as one and then there is empty message 
-(I guess) which server does not like.
+the server. 
+
+### Circlet server
+
+You can run simple http server with `janet circlet-server.janet`. Then open
+http://localhost:8130/ to the site. There is only one other url:
+http://localhost:8130/playground which is more involved as it uses Cookies!
+
+Benchmarking the "/" path I can get 25 Kreq/s on my desktop computer with `wrk`
+and 10 concurent connections.
+
+### cUrl download
+
+Example of using [jurl] library in `curl-download.janet` program. You can run it
+with `janet curl-download.janet`. It will show you http://www.google.com content
+(oh no it is full of JS) and download some happy tunes.
+
+### PEG 
+
+PEG from the standart library is used on more places. Very simple example, taken
+from [Janet] [PEG] documentation.
+
+For me personaly [PEG] is one the greatest surprises and delights in [Janet] 
+language.
+
+### Numbers walking
+
+Simple tree walker implemented with `walk` fn from [Janet] standart library. 
+
+
+[Janet]: https://janet-lang.org/index.html
+[juv]: https://github.com/janet-lang/juv
+[circlet]: https://github.com/janet-lang/circlet
+[PEG]: https://janet-lang.org/docs/peg.html
+[jurl]: https://github.com/sepisoad/jurl
 
 ## TODO:
 - [ ] add path example
 - [ ] add json example
 - [ ] add SQLite example
-- [ ] add links
+- [x] add links
 - [x] add usage
 - [x] add tcp client example
 - [x] add circlet example
