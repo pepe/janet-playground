@@ -66,6 +66,8 @@ Simple tree walker implemented with `walk` fn from [Janet] standart library.
 [sqlite]: https://github.com/janet-lang/sqlite3
 
 ## TODO:
+- [ ] refactor
+- [ ] add argparse example
 - [ ] add path example
 - [x] add json example
 - [x] add SQLite example
