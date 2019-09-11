@@ -1,6 +1,7 @@
 # Example http server. All code taken from https://github.com/bakpakin/littleserver
 (import circlet)
 (import sqlite3 :as sql)
+(import json)
 
 (import utils :as u)
 (import circlet/utils :as cu)
@@ -38,12 +39,17 @@
 (defn people-handler 
   "Renders the people page"
   [req]
+  (def accept (get-in req [:headers "Accept"]))
   (def records (get-records "people"))
-  (defn record-line [record] (string "<h2> for " (record "name") " call " (record "phone") "</h2>"))
-  (->> (map record-line records)
-      (array/concat @[] (header "People list"))
-       html
-       cu/success))
+  (if (= accept "application/json")
+    (cu/success (json/encode records) {"Content-Type" "application/json"})
+    (do 
+     (defn record-line [record] (string "<h2> for " (record "name") " call " (record "phone") "</h2>"))
+     (->> records
+          (map record-line)
+          (array/concat @[] (header "People list"))
+          html
+          cu/success))))
 
 (defn not-found 
   "Renders page for unmatched route"
