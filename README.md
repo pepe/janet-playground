@@ -67,7 +67,7 @@ Simple tree walker implemented with `walk` fn from [Janet] standart library.
 
 ## TODO:
 - [ ] add path example
-- [ ] add json example
+- [x] add json example
 - [x] add SQLite example
 - [x] add links
 - [x] add usage
