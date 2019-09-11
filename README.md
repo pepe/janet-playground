@@ -25,11 +25,19 @@ the server.
 ### Circlet server
 
 You can run simple http server with `janet circlet-server.janet`. Then open
-http://localhost:8130/ to the site. There is only one other url:
-http://localhost:8130/playground which is more involved as it uses Cookies!
+http://localhost:8130/ to the site. Benchmarking the "/" path I can get 25 
+Kreq/s on my desktop computer with `wrk` and 10 concurent connections.
 
-Benchmarking the "/" path I can get 25 Kreq/s on my desktop computer with `wrk`
-and 10 concurent connections.
+Next url: http://localhost:8130/playground is more involved as it uses Cookies!
+
+#### SQLite 
+
+If you want to try [sqlite] integration with [circlet], you have to run 
+`janet setup-sqlite.janet`, which will recreate sample DB. Then on the url:
+http://localhost:8130/people is list of the records from the DB in html. If you
+use curl with json content type, you will receive JSON representation of it:
+`curl -H "Accept: application/json" http://localhost:8130/people`
+
 
 ### cUrl download
 
@@ -55,6 +63,7 @@ Simple tree walker implemented with `walk` fn from [Janet] standart library.
 [circlet]: https://github.com/janet-lang/circlet
 [PEG]: https://janet-lang.org/docs/peg.html
 [jurl]: https://github.com/sepisoad/jurl
+[sqlite]: https://github.com/janet-lang/sqlite3
 
 ## TODO:
 - [ ] add path example
