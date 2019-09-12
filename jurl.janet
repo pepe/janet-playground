@@ -1,17 +1,17 @@
-# Example curl. All code taken from https://github.com/sepisoad/jurl.git
-(import curl :as curl)
+# Example jurl. All code taken from https://github.com/sepisoad/jurl.git
+(import curl)
 
 (defn fetch
   "Simple url fetch. Returns string with the content of the resource."
  [url] 
-  (def c (curl/easy/init))
-  (def b (buffer))
-  (:setopt c
-           :url url
-           :write-function (fn [buf] (buffer/push-string b buf))
-           :no-progress? true)
-  (:perform c)
-  (string b))
+  (let [c (curl/easy/init)
+        b (buffer)]
+    (:setopt c
+            :url url
+            :write-function (fn [buf] (buffer/push-string b buf))
+            :no-progress? true)
+    (:perform c)
+    b))
 
 (defn download
   "Download a file with curl easy and progress"
@@ -40,7 +40,7 @@
     (:perform c)
     (print "Wrote to \e[36m" to "\e[0m")))
 
-(print "Content of https://google.com:\n" (fetch "https://google.com"))
+(print "Content of https://google.com:\n" (fetch "https://www.google.com"))
 (print (string/repeat "-" 80) "\n")
 
 (download "https://upload.wikimedia.org/wikipedia/commons/7/79/Big_Buck_Bunny_small.ogv"
