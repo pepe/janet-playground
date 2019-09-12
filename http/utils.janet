@@ -9,6 +9,10 @@
   "Returns not found response"
   (response 404 body headers))
 
+(defn not-auth [body &opt headers]
+  "Returns not autorized response"
+  (response 401 body headers))
+
 (defn success [body &opt headers]
   "Return success response "
   (response 200 body headers))
@@ -36,7 +40,7 @@
   "Returns header tag with text"
   (string "<h1>" (join-if-indexed text) "</h1>"))
 
-(defn html [body] 
+(defn html [body]
   "Returns html document with body"
   (string "<!doctype html><html><body>" (join-if-indexed body) "</body></html>"))
 

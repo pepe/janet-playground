@@ -37,6 +37,15 @@
              hu/html
              hu/success)))))
 
+(defn bearer-handler
+  "Handles authorization by Bearer:"
+  [nextmw bearer]
+  (fn [req]
+    (let [authorization (hu/get-header req "Authorization")]
+      (if (= authorization (string "Bearer: " bearer)) 
+        (nextmw req) 
+        (hu/not-auth "You are not authorized")))))
+
 (defn not-found 
   "Renders page for unmatched route"
   [&]
@@ -47,6 +56,7 @@
   {"/" home-success
    "/playground" (-> playground-handler circlet/cookies circlet/logger)
    "/people" (-> people-handler circlet/logger)
+   "/protected-people" (-> people-handler (bearer-handler "abcd") circlet/logger)
    :default not-found})
 
 (-> routes circlet/router (circlet/server 8130))

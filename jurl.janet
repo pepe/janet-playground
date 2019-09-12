@@ -40,8 +40,3 @@
     (:perform c)
     (print "Wrote to \e[36m" to "\e[0m")))
 
-(print "Content of https://google.com:\n" (fetch "https://www.google.com"))
-(print (string/repeat "-" 80) "\n")
-
-(download "https://upload.wikimedia.org/wikipedia/commons/7/79/Big_Buck_Bunny_small.ogv"
-                   "DOWNLOAD")
