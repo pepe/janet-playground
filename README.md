@@ -24,7 +24,7 @@ the server.
 
 ### Circlet server
 
-You can run simple http server with `janet circlet-server.janet`. Then open
+You can run simple http server with `janet http-server.janet`. Then open
 http://localhost:8130/ to the site. Benchmarking the "/" path I can get 25 
 Kreq/s on my desktop computer with `wrk` and 10 concurent connections.
 
@@ -39,16 +39,16 @@ use curl with json content type, you will receive JSON representation of it:
 `curl -H "Accept: application/json" http://localhost:8130/people`
 
 
-### cUrl download
+### cUrl download with jurl
 
-Example of using [jurl] library in `curl-download.janet` program. You can run it
-with `janet curl-download.janet`. It will show you http://www.google.com content
+Example of using [jurl] library in `basic-jurl.janet` program. You can run it
+with `janet basic-jurl.janet`. It will show you http://www.google.com content
 (oh no it is full of JS) and download some happy tunes.
 
 ### PEG 
 
 PEG from the standart library is used on more places. Very simple example, taken
-from [Janet] [PEG] documentation.
+from [Janet] [PEG] documentation can be run with `janet test-peg.janet`.
 
 For me personaly [PEG] is one the greatest surprises and delights in [Janet] 
 language.
@@ -66,9 +66,9 @@ Simple tree walker implemented with `walk` fn from [Janet] standart library.
 [sqlite]: https://github.com/janet-lang/sqlite3
 
 ## TODO:
-- [ ] refactor
 - [ ] add argparse example
 - [ ] add path example
+- [x] refactor
 - [x] add json example
 - [x] add SQLite example
 - [x] add links
