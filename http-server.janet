@@ -52,7 +52,7 @@
   (hu/not-found (hu/html "Not Found.")))
 
 (def routes
-  "these are our routes"
+  "Defines routes"
   {"/" home-success
    "/playground" (-> playground-handler circlet/cookies circlet/logger)
    "/people" (-> people-handler circlet/logger)
