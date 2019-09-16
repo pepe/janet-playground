@@ -44,10 +44,8 @@
   "Looks up uri in routes and returns action and params for the matched route"
   (var matched [])
   (loop [[grammar action] :pairs compiled-routes
-         :when (empty? matched)]
-    (when-let [args (extract-args grammar uri)] 
-              (set matched [action args])
-              (break)))
+         :while (empty? matched)]
+    (when-let [args (extract-args grammar uri)] (set matched [action args])))
   matched)
 
 (defn router
