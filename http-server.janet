@@ -13,6 +13,11 @@
   [&]
   (hu/not-found (hu/html "Not Found.")))
 
+(defn bad-request
+  "Renders page for unmatched route"
+  [reason]
+  (hu/bad-request (hu/html (string "Bad request " reason))))
+
 (def home-success 
   "Content for home page"
   (-> "Hello from the Janet's Home" hu/header hu/html hu/success))
@@ -27,7 +32,9 @@
        hu/html 
        (hu/success (hu/set-cookie "visits" (string visits ";Max-Age=60"))))))
 
-(defn record-line [record] (string "<h2> for " (record "name") " call " (record "phone") "</h2>"))
+(defn person-line [record] 
+  "Returns line with person's record detail"
+  (string "<h2> for " (record "name") " call " (record "phone") "</h2>"))
 
 (defn people-handler 
   "Renders the people page"
@@ -38,7 +45,7 @@
       (hu/success (json/encode records) {"Content-Type" "application/json"})
       (do 
         (->> records
-             (map record-line)
+             (map person-line)
              (array/concat @[] (hu/header "People list"))
              hu/html
              hu/success)))))
@@ -46,20 +53,20 @@
 (defn person-handler 
   "Renders the one person page"
   [req]
-  (let [accept (hu/get-header req "Accept")
-        id (get-in req [:params :id])
-        record (su/get-record "people" id)]
-    (if record
-      (if (= accept "application/json")
-        (hu/success (json/encode record) {"Content-Type" "application/json"})
-        (do 
-          (defn record-line [record] (string "<h2> for " (record "name") " call " (record "phone") "</h2>"))
-          (->> record
-               record-line
-               (array/concat @[] (hu/header ["Person id:" id]))
-               hu/html
-               hu/success)))
-      (not-found req))))
+  (if-let [id (-> req (get-in [:params :id]) scan-number)]
+    (let [accept (hu/get-header req "Accept")
+          record (su/get-record "people" id)]
+      (if record
+       (if (= accept "application/json")
+         (hu/success (json/encode record) {"Content-Type" "application/json"})
+         (do 
+           (->> record
+                person-line
+                (array/concat @[] (hu/header ["Person id: " id]))
+                hu/html
+                hu/success)))
+       (not-found req)))
+    (bad-request "ID has bad type, it should be number.")))
 
 (defn bearer-handler
   "Handles authorization by Bearer"
@@ -75,6 +82,7 @@
   {"/" home-success
    "/playground" (-> playground-handler circlet/cookies circlet/logger)
    "/people" (-> people-handler circlet/logger)
+   "/people/:id" (-> person-handler circlet/logger)
    "/person/:id" (-> person-handler circlet/logger)
    "/protected-people" (-> people-handler (bearer-handler "abcd") circlet/logger)
    :not-found not-found})

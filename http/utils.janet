@@ -9,6 +9,10 @@
   "Returns not found response"
   (response 404 body headers))
 
+(defn bad-request [body &opt headers]
+  "Returns not found response"
+  (response 400 body headers))
+
 (defn not-auth [body &opt headers]
   "Returns not autorized response"
   (response 401 body headers))
