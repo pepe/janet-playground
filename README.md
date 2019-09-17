@@ -8,7 +8,7 @@ almost nothing to see here now.
 You will need [Janet] programming language installed on your computer.
 
 Clone this repo, and `cd` to it. Then run `[sudo] jpm deps` do download 
-dependencies.
+dependencies. To run any script `cd src`.
 
 ### TCP communication
 
