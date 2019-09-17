@@ -55,10 +55,10 @@
     "%2F" "/" "%3F" "?" "%3A" ":" "%40" "@" "%3D" "="
     "%26" "&" "%24" "$"})
 
-(defn substitutes [patts]
+(defn- substitutes [patts]
   (peg/compile ['% ['any ['+ ;patts '(<- 1)]]]))
 
-(defn substitute [patt subst] ~(/ (<- ,patt) ,subst) )
+(defn- substitute [patt subst] ~(/ (<- ,patt) ,subst) )
 
 (defn decode
   "Decodes string from query string"
@@ -66,16 +66,16 @@
   (unless s (break))
   (first 
     (peg/match 
-           (substitutes 
-             (seq [[patt subst] :pairs escape-chars] 
-                  (substitute patt subst))) s)))
+       (substitutes 
+         (seq [[patt subst] :pairs escape-chars] 
+              (substitute patt subst))) s)))
 
 (defn encode
   "Encodes string from query string"
   [s]
   (unless s (break))
   (first 
-    (peg/match 
-           (substitutes 
-             (seq [[subst patt] :pairs escape-chars] 
-                  (substitute patt subst))) s)))
+    (peg/match
+      (substitutes 
+        (seq [[subst patt] :pairs escape-chars] 
+          (substitute patt subst))) s)))

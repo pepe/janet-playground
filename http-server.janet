@@ -40,8 +40,11 @@
   "Renders the people page"
   [req]
   (let [accept (hu/get-header req "Accept")
-        records (if-let [name (->> [:query-params "name"] (get-in req) hu/decode)] 
-                  (su/find-records "people" "WHERE name=:name" {:name name}) 
+        records (if-let [qp (req :query-params)] 
+                  (su/find-records "people"
+                                   (->> [:name :phone] 
+                                    (u/select-keys qp) 
+                                    (u/map-vals hu/decode))) 
                   (su/get-records "people"))]
     (if (= accept "application/json")
       (hu/success (json/encode records) {"Content-Type" "application/json"})
@@ -78,8 +81,9 @@
         (nextmw req) 
         (hu/not-auth "You are not authorized")))))
 
-(defn query-string 
-  "Parses query string into janet struct"
+(defn query-params
+  "Parses query string into janet struct. 
+   Keys are keywordized"
   [nextmw]
   (def matcher
     |(peg/match
@@ -92,6 +96,7 @@
           req 
           matcher
           (apply table)
+          (u/map-keys keyword)
           (put req :query-params)
           nextmw)))
 
@@ -99,7 +104,7 @@
   "Defines routes"
   {"/" home-success
    "/playground" (-> playground-handler circlet/cookies circlet/logger)
-   "/people" (-> people-handler query-string circlet/logger)
+   "/people" (-> people-handler query-params circlet/logger)
    "/people/:id" (-> person-handler circlet/logger)
    "/person/:id" (-> person-handler circlet/logger)
    "/protected-people" (-> people-handler (bearer-auth "abcd") circlet/logger)
