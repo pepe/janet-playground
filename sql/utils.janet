@@ -6,5 +6,9 @@
   "Get records from the table"
   (sql/eval db (string `SELECT * FROM ` table `;`)))
 
+(defn get-record [table id]
+  "Get records from the table"
+  (first (sql/eval db (string `SELECT * FROM ` table ` WHERE ID=` id `;`))))
+
 (defn close []
   "Closes DB connection")
