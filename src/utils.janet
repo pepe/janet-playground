@@ -37,3 +37,8 @@
      flatten
      splice
      table))
+
+(defn join-if-indexed [arg]
+  "Joins argument to string if it is indexed sequence"
+  (if (indexed? arg) (string ;arg) arg))
+
