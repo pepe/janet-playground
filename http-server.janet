@@ -92,13 +92,14 @@
         :main '(some (* (* ':content :eql ':content) (any :sep)))})
       $))
   (fn [req]
-    (-?>> :query-string
-          req 
-          matcher
-          (apply table)
-          (u/map-keys keyword)
-          (put req :query-params)
-          nextmw)))
+    (let [qs (req :query-string)]
+      (unless (empty? qs)
+        (-?>> qs
+             matcher
+             (apply table)
+             (u/map-keys keyword)
+             (put req :query-params)) )
+     (nextmw req))))
 
 (def routes
   "Defines routes"
