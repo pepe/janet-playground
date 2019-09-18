@@ -77,9 +77,9 @@
   "Defines routes"
   {"/" home-success
    "/playground" (-> playground-handler circlet/cookies circlet/logger)
-   "/people" (-> people-handler mw/query-params circlet/logger)
-   "/people/:id" (-> person-handler circlet/logger)
-   "/person/:id" (-> person-handler circlet/logger)
+   "/people" (-> people-handler mw/query-params)
+   "/people/:id" person-handler
+   "/person/:id" person-handler
    "/protected-people" (-> people-handler (mw/bearer-auth "abcd") circlet/logger)
    :not-found not-found})
 
