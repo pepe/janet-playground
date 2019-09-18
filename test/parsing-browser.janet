@@ -1,11 +1,9 @@
 (import tester :prefix "")
 (import ../src/parsing-router :as parsing-router)
 
+(def routes {"/" :root "/home/:id" :home})
 (def compiled-routes 
-  (parsing-router/compile-routes {"/" :root
-                                  "/home/:id" :home}))
-
-(pp (parsing-router/lookup compiled-routes "/home/"))
+  (parsing-router/compile-routes routes))
 
 (deftest "Lookup uri"
   (test "lookup"
@@ -15,5 +13,11 @@
         (deep= (parsing-router/lookup compiled-routes "/") 
                '(:root @{})))
   (test "lookup rooty"
-        (deep= (parsing-router/lookup compiled-routes "/home/") 
-               '(:root @{}))))
+        (empty? (parsing-router/lookup compiled-routes "/home/"))))
+
+(deftest "Router"
+  (def router (parsing-router/router routes))
+  (test "Router root"
+        (= (router @{:uri "/"}) :root))
+  (test "Router home"
+        (= (router @{:uri "/home/3"}) :home)))

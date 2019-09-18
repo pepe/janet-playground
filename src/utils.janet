@@ -30,13 +30,14 @@
 (defmacro select-keys
   "Returns new struct with only keys from xs selected"
   [d sk]
-  ~(->>
-     (seq [[k v] :pairs ,d
-           :when (or ,;(seq [x :in sk] (tuple '= 'k x)))]
-          [k v])
-     flatten
-     splice
-     table))
+  (with-syms [$k $v] 
+    ~(->>
+      (seq [[,$k ,$v] :pairs ,d
+            :when (or ,;(seq [x :in ,;sk] (tuple '= $k x)))]
+           [,$k ,$v])
+      flatten
+      splice
+      table)))
 
 (defn join-if-indexed [arg]
   "Joins argument to string if it is indexed sequence"

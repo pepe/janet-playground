@@ -20,8 +20,16 @@
 
 (deftest "select-keys"
   (test "Selects keys"
-        (deep= (utils/select-keys {:a 1 :b 2} [:a]) @{:a 1})))
+        (deep= (utils/select-keys {:a 1 :b 2} [:a]) @{:a 1}))
+  (test "Selects more keys"
+        (deep= (utils/select-keys {:a 1 :b 2 :c 3} [:a :c]) @{:a 1 :c 3}))
+  (def k {:a 1 :b 2 :c 3})
+  (def x [:a :c])
+  (test "Selects hygiene"
+        (deep= (utils/select-keys k x) @{:a 1 :c 3})))
 
 (deftest "join-if-indexed"
   (test "Joins array"
-        (= (utils/join-if-indexed ["a" "bb" "ccc"]) "abbccc")))
+        (= (utils/join-if-indexed ["a" "bb" "ccc"]) "abbccc"))
+  (test "Does nothing for string"
+        (= (utils/join-if-indexed "abbccc") "abbccc")))
