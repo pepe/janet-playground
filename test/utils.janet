@@ -11,12 +11,12 @@
 (deftest "map-keys"
   (test "Maps keys to keyword" 
         (deep= (utils/map-keys keyword {"a" 1 "b" 2}) 
-               @{:a 1 :b 2})))
+               {:a 1 :b 2})))
 
 (deftest "map-vals"
   (test "Maps vals to square" 
         (deep= (utils/map-vals (fn [x] (* x x)) {"a" 1 "b" 2}) 
-               @{"a" 1 "b" 4})))
+               {"a" 1 "b" 4})))
 
 (pp (utils/select-keys {:a 1 :b 2} [:a]))
 (deftest "select-keys"
