@@ -1,11 +1,11 @@
-# Example http server. All code taken from https://github.com/bakpakin/littleserver
+# Example http server. 
+
 (import circlet)
-(import sqlite3 :as sql)
 (import json)
 
-(import parsing-router :as pr)
 (import utils :as u)
 (import sql/utils :as su)
+(import http/router :as r)
 (import http/middleware :as mw)
 (import http/helpers :as hh)
 
@@ -80,6 +80,6 @@
    "/protected-people" (-> people-handler (mw/bearer-auth "abcd") circlet/logger)
    :not-found not-found})
 
-(-> routes pr/router (circlet/server 8130))
+(-> routes r/router (circlet/server 8130))
 
 (su/close)
