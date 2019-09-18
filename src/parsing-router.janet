@@ -18,8 +18,9 @@
                         (if :path (group (* (constant :path) :capture-path)))
                         (if -1 (group (* (constant :root) (constant -1))) ))))}))
 
-(defn- compile-route [route]
+(defn- compile-route
   "Compiles custom grammar for one route"
+  [route]
   (-> (seq [[pt p] :in (peg/match grammar route)]
            (case pt
              :root (tuple '* sep p)
@@ -33,23 +34,25 @@
       tuple
       peg/compile))
 
-(defn compile-routes [routes]
+(defn- extract-args
+  "Extracts arguments from peg match"
+  [route-grammar uri]
+  (when-let [p (peg/match route-grammar uri)]
+    (table ;(flatten p))))
+
+(defn compile-routes
   "Compiles PEG grammar for all routes"
+  [routes]
   (let [res @{}]
     (loop [[route action] :pairs routes] 
         (when (string? route) (put res (compile-route route) action)))
     res))
 
-(defn- extract-args [route-grammar uri]
-  "Extracts arguments from peg match"
-  (when-let [p (peg/match route-grammar uri)]
-    (table ;(flatten p))))
-
-(defn lookup [compiled-routes uri]
+(defn lookup 
   "Looks up uri in routes and returns action and params for the matched route"
-  (var matched [])
-  (loop [[grammar action] :pairs compiled-routes
-         :while (empty? matched)]
+  [compiled-routes uri]
+  (var matched false)
+  (loop [[grammar action] :pairs compiled-routes :until matched]
     (when-let [args (extract-args grammar uri)] (set matched [action args])))
   matched)
 
