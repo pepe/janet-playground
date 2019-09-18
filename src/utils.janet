@@ -27,19 +27,16 @@
        splice
        table))
 
-(defmacro select-keys
-  "Returns new struct with only keys from xs selected"
-  [d sk]
-  (with-syms [$k $v] 
-    ~(->>
-      (seq [[,$k ,$v] :pairs ,d
-            :when (or ,;(seq [x :in ,;sk] (tuple '= $k x)))]
-           [,$k ,$v])
-      flatten
-      splice
-      table)))
+(defn select-keys 
+  "Returns new struct with selected keys from dictionary"
+  [dictionary keyz]
+  (def res @{})
+  (loop [[k v] :pairs dictionary]
+    (when (some |(= k $) keyz) (put res k v)))
+  (freeze res))
 
-(defn join-if-indexed [arg]
+(defn join-if-indexed
   "Joins argument to string if it is indexed sequence"
+  [arg]
   (if (indexed? arg) (string ;arg) arg))
 

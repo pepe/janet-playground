@@ -18,15 +18,16 @@
         (deep= (utils/map-vals (fn [x] (* x x)) {"a" 1 "b" 2}) 
                @{"a" 1 "b" 4})))
 
+(pp (utils/select-keys {:a 1 :b 2} [:a]))
 (deftest "select-keys"
   (test "Selects keys"
-        (deep= (utils/select-keys {:a 1 :b 2} [:a]) @{:a 1}))
+        (deep= (utils/select-keys {:a 1 :b 2} [:a]) {:a 1}))
   (test "Selects more keys"
-        (deep= (utils/select-keys {:a 1 :b 2 :c 3} [:a :c]) @{:a 1 :c 3}))
+        (deep= (utils/select-keys {:a 1 :b 2 :c 3} [:a :c]) {:a 1 :c 3}))
   (def k {:a 1 :b 2 :c 3})
   (def x [:a :c])
   (test "Selects hygiene"
-        (deep= (utils/select-keys k x) @{:a 1 :c 3})))
+        (deep= (utils/select-keys k x) {:a 1 :c 3})))
 
 (deftest "join-if-indexed"
   (test "Joins array"
