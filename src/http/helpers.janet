@@ -1,3 +1,5 @@
+(import ../utils :as u)
+
 (defn response [code body &opt headers]
   (default headers @{})
   (let [headers (merge {"Content-Type" "text/html"} headers)]
@@ -36,22 +38,18 @@
   [req header] 
   (get-in req [:headers header]) )
 
-(defn- join-if-indexed [arg]
-  "Joins argument to string if it is indexed sequence"
-  (if (indexed? arg) (string ;arg) arg))
-
 (defn header [text] 
   "Returns header tag with text"
-  (string "<h1>" (join-if-indexed text) "</h1>"))
+  (string "<h1>" (u/join-if-indexed text) "</h1>"))
 
 (defn html [body]
   "Returns html document with body"
-  (string "<!doctype html><html><body>" (join-if-indexed body) "</body></html>"))
+  (string "<!doctype html><html><body>" (u/join-if-indexed body) "</body></html>"))
 
 (def- escape-chars 
   {"%20" " " "%3C" "<" "%3E" ">" "%23" `#` "%25" "%"
     "%7B" "{" "%7D" "}" "%7C" "|" "%5C" `\` "%5E" "^"
-    "%7E" "~" "%5B" "[" "%5D" "]" "%60" "`" "%3B" `;`
+    "%7E" "~" "%5B" "[" "%5D" "]" "%60" "`" "%3B" ";"
     "%2F" "/" "%3F" "?" "%3A" ":" "%40" "@" "%3D" "="
     "%26" "&" "%24" "$"})
 

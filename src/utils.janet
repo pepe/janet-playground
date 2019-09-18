@@ -10,30 +10,35 @@
           "th")))
 
 (defn map-keys 
-  "Returns new table with f applied to dictionary's keys"
+  "Returns new struct with f applied to dictionary's keys"
   [f d]
   (-> [[k v] :pairs d]
        (seq [(f k) v])
        flatten
        splice
-       table))
+       table
+       freeze))
 
 (defn map-vals
-  "Returns new table with f applied to dictionary's values"
+  "Returns new struct with f applied to dictionary's values"
   [f d]
   (-> [[k v] :pairs d]
        (seq [k (f v)])
        flatten
        splice
-       table))
+       table
+       freeze))
 
-(defmacro select-keys
-  "Returns new struct with only keys from xs selected"
-  [d sk]
-  ~(->>
-     (seq [[k v] :pairs ,d
-           :when (or ,;(seq [x :in sk] (tuple '= 'k x)))]
-          [k v])
-     flatten
-     splice
-     table))
+(defn select-keys 
+  "Returns new struct with selected keys from dictionary"
+  [dictionary keyz]
+  (def res @{})
+  (loop [[k v] :pairs dictionary]
+    (when (some |(= k $) keyz) (put res k v)))
+  (freeze res))
+
+(defn join-if-indexed
+  "Joins argument to string if it is indexed sequence"
+  [arg]
+  (if (indexed? arg) (string ;arg) arg))
+

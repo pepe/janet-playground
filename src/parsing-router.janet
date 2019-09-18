@@ -4,13 +4,17 @@
   "Characters we consider part of the route"
   '(+ (range "AZ") (range "az") (range "09") (set "-_")))
 
+(def sep "Separator character" "/")
+
+(def pref "Param prefix character" ":")
+
 (def grammar 
   "PEG grammar to match routes with"
   (peg/compile
-    {:slash "/" :path ~(some ,content) 
-     :param '(* ":" :path) :capture-path '(<- :path)
-     :main '(some (* :slash 
-                     (+ (if :param (group (* (constant :param) ":" :capture-path)))
+    {:sep sep :pref pref :path ~(some ,content) 
+     :param '(* :pref :path) :capture-path '(<- :path)
+     :main '(some (* :sep 
+                     (+ (if :param (group (* (constant :param) :pref :capture-path)))
                         (if :path (group (* (constant :path) :capture-path)))
                         (if -1 (group (* (constant :root) (constant -1))) ))))}))
 
@@ -18,10 +22,11 @@
   "Compiles custom grammar for one route"
   (-> (seq [[pt p] :in (peg/match grammar route)]
            (case pt
-             :root (tuple '* "/" p)
-             :path (tuple '* "/" p) 
-             :param (tuple '* "/" ~(group (* (constant ,(keyword p))
-                                             (<- (some ,content)))))))
+             :root (tuple '* sep p)
+             :path (tuple '* sep p) 
+             :param (tuple '* sep 
+                           ~(group (* (constant ,(keyword p))
+                                      (<- (some ,content)))))))
       (array/insert 0 '*)
       (array/push -1)
       splice
