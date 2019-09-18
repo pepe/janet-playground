@@ -27,6 +27,7 @@
              matcher
              (apply table)
              (u/map-keys keyword)
+             (u/map-vals hh/decode)
              (put req :query-params)) )
      (nextmw req))))
 

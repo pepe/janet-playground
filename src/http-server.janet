@@ -42,10 +42,7 @@
   [req]
   (let [accept (hh/get-header req "Accept")
         records (if-let [qp (req :query-params)] 
-                  (su/find-records "people"
-                                   (->> [:name :phone] 
-                                    (u/select-keys qp) 
-                                    (u/map-vals hh/decode))) 
+                  (su/find-records "people" (u/select-keys qp [:name :phone])) 
                   (su/get-records "people"))]
     (if (= accept "application/json")
       (hh/success (json/encode records) {"Content-Type" "application/json"})
