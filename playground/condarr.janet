@@ -36,7 +36,7 @@
 (pp (cond-> @{}
             (> a 1) (put :a a)
             (> b 1) (put :b b)
-            (> c 0.5) (merge {:hola "Amigo"})
+            (> c 0.5) (put :hola "Amigo")
             (> a b) freeze))
 
 (pp (cond->> @{}
