@@ -47,11 +47,12 @@
   ```
   This is simple example of communication with many threads running
   in event loop through the `os/pipe` .
+  Takes optional number of threads to spin, default is 4.
   It will print four random bytes from /dev/urandom by thread.
   ```
-  (default n 24)
+  (default n 4)
   (def os @[])
-  (loop [_ :range [0 n]]
+  (loop [j :range [0 n]]
     (def [i o] (os/pipe))
     (ev/go
       (fiber/new
@@ -62,8 +63,7 @@
               (with [f (file/open "/dev/urandom" :r)]
                 (file/read f 4 res))
               (ev/write o res)
-              (ev/close o)
-              (print "done"))))
+              (print "done " j))))
         :tp)
       (array/push os i)))
   (loop [j :range [0 n]]
