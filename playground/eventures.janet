@@ -1,6 +1,13 @@
+# janet -l ./playground/eventures
 (comment (import ./playground/eventures :as e :fresh true))
 
 (defn run-supervised []
+  ```
+  This is simple example of running server in the fiber and supervise it
+  from the parent fiber.
+  To test it go to the http://localhost:8OOO, and look at code print out.
+  Go to /die path and it will kill the process.
+  ```
   (def c (ev/chan))
   (ev/go
     (coro
@@ -19,13 +26,18 @@
 
 
 (defn pipe-thread []
+  ```
+  This is simple example of communication with thread running in event loop
+  through the `os/pipe` .
+  It will print four random bytes from /dev/urandom.
+  ```
   (def [i o] (os/pipe))
   (ev/thread
     (coro
       (var res @"")
       (with [f (file/open "/dev/urandom" :r)]
-        (file/read f 16 res))
+        (file/read f 4 res))
       (ev/write o res)
       (ev/close o)
       (print "done")))
-  (pp (ev/read i 4)))
+  (ev/read i 4))
