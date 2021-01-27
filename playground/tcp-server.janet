@@ -1,45 +1,22 @@
 # Example tcp server. All code taken from juv test
-(import uv)
-(import proto)
-(import log)
+(import ./proto)
+(import ./log)
 
-(def host "0.0.0.0")
-(def port  8120)
+(def host "localhost")
+(def port 8000)
 
-(defn l [& what] (log/debug :server (string ;what)) )
+(defn l [& what] (log/debug :server (string ;what)))
 
-(def server (uv/tcp/new))
+(defn handler [stream]
+  (l "Connection ")
+  (net/write stream "Hi, I will repeat anything you will say!\n")
+  (var cont true)
+  (while cont
+    (def res (net/read stream 1024))
+    (def [message end] (proto/parse res))
+    (net/write stream (string "You said: " message))
+    (set cont (not end)))
+  (l "Closed"))
 
-(defn handler [&]
-  (def client (uv/tcp/new))
-
-  (defn answer [stream]
-    (yield (:write client (string "You said:\n " stream)))
-    (yield (:write client proto/end)))
-  (defn stop [stream]
-    (l "received")
-    (answer stream)
-    (l "answered")
-    (:read-stop client)
-    (l "finished")
-    (break))
-
-  (l "connected")
-  (:accept server client)
-  (yield (:write client "Hi, I will repeat anything you will say!\n"))
-  (yield (:write client proto/end))
-  (:read-start client)
-  (var stream "") 
-  (while true
-    (def chunk (yield))
-    (let [[message end] (proto/parse chunk)]
-      (set stream (string stream message))
-      (when (not (empty? end)) (stop stream)))))
-
-(uv/enter-loop
-  (l "initialized")
-  (:bind server host port)
-  (l "started")
-  (:listen server handler))
-
-
+(l "started")
+(net/server host port handler)
