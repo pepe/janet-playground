@@ -9,15 +9,16 @@
   Go to /die path and it will kill the process.
   ```
   (def c (ev/chan))
+  (defn handler [stream]
+    (fn [stream]
+      (def req (:read stream 32))
+      (if (string/find "die" req)
+        (ev/give-supervisor :dying)
+        (ev/give-supervisor :received req))
+      (net/close stream)))
   (ev/go
     (coro
-      (net/server "localhost" "8888"
-                  (fn [stream]
-                    (def req (:read stream 32))
-                    (if (string/find "die" req)
-                      (ev/give-supervisor :dying)
-                      (ev/give-supervisor :received req))
-                    (net/close stream)))) nil c)
+      (net/server "localhost" "8000" handler)) nil c)
   (forever
     (match (ev/take c)
       [:received req] (pp req)
