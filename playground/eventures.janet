@@ -41,4 +41,30 @@
       (ev/write o res)
       (ev/close o)
       (print "done")))
-  (ev/read i 4))
+  (pp (ev/read i 4)))
+
+(defn pipe-threads [&opt n]
+  ```
+  This is simple example of communication with many threads running
+  in event loop through the `os/pipe` .
+  It will print four random bytes from /dev/urandom by thread.
+  ```
+  (default n 24)
+  (def os @[])
+  (loop [_ :range [0 n]]
+    (def [i o] (os/pipe))
+    (ev/go
+      (fiber/new
+        (fn []
+          (ev/thread
+            (coro
+              (var res @"")
+              (with [f (file/open "/dev/urandom" :r)]
+                (file/read f 4 res))
+              (ev/write o res)
+              (ev/close o)
+              (print "done"))))
+        :tp)
+      (array/push os i)))
+  (loop [j :range [0 n]]
+    (pp (ev/read (os j) 4))))
