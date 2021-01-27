@@ -41,7 +41,7 @@
 (pp (thread/receive)) # => prints Hello method
 
 (repeat 3
-        (print "HO"))
+  (print "HO"))
 # => prints
 # HO
 # HO
@@ -62,3 +62,28 @@
 (pp ct) # => @{:c @[1 2 3 4] :a 3 :b 2}
 # array under key :c is shared between tables!
 
+(def a @[23 42])
+(array/clear a)
+(pp a)
+
+(var a false)
+(defer (set a 42)
+  (set a true)
+  (error "Oh no!"))
+
+(pp a)
+
+(os/mkdir "templates")
+
+(peg/find '(:d+) "Battery temperature: 40 °C")
+
+(def f (ev/go (coro "world"))) # coro is great for fast fiber creating
+(ev/sleep 0.0001) # give ev a chance in the REPL, remove in file
+(fiber/last-value f)
+
+(when-with [f (file/open "nofile.exists")]
+  (print "Realy?"))
+
+(keyword/slice "some crazy keyword" 11 -1)
+
+(peg/replace-all '(set "aiou") "e" "The quick brown fox jumps over the lazy dog")

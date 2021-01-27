@@ -12,6 +12,8 @@ dependencies. To run any script `cd playground`.
 
 ### TCP communication
 
+This is deprecated in favor of `net/`
+
 You can run simple echo server with `janet tcp-server.janet`. Server is
 implemented with [juv].
 
