@@ -53,19 +53,21 @@
   ```
   (default n 4)
   (def os @[])
+  (def chan (ev/chan n))
   (loop [j :range [0 n]]
-    (def [i o] (os/pipe))
     (ev/go
       (fiber/new
         (fn []
+          (def [i o] (os/pipe))
           (ev/thread
             (coro
               (var res @"")
               (with [f (file/open "/dev/urandom" :r)]
                 (file/read f 4 res))
               (ev/write o (marshal [j res]))
-              (eprint "done " j))))
+              (eprint "done " j)))
+          (ev/give-supervisor :read (unmarshal (ev/read i 32))))
         :tp)
-      (array/push os i)))
-  (loop [j :range [0 n]]
-    (pp (unmarshal (ev/read (os j) 32)))))
+      nil chan))
+  (loop [_ :range [0 (* 2 n)]]
+    (pp (ev/take chan))))
