@@ -87,3 +87,17 @@
 (keyword/slice "some crazy keyword" 11 -1)
 
 (peg/replace-all '(set "aiou") "e" "The quick brown fox jumps over the lazy dog")
+
+(def b @"")
+(xprin b "HOHHO")
+
+(def b @"")
+(xprint b "HOHHO")
+
+(def b @"")
+(def v (* 1000 (math/random)))
+(xprinf b "Value reached level %f" v)
+
+(def b @"")
+(def v (* 1000 (math/random)))
+(xprintf b "Value reached level %f" v)
