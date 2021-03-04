@@ -1,4 +1,4 @@
-# Example tcp client. Use it with example tcp server. All code taken from juv test
+# Example tcp client. Use it with example tcp server.
 (import ./proto)
 (import ./log)
 
@@ -6,7 +6,8 @@
 
 (with [client (net/connect "localhost" 8000)]
   (l (net/read client 1024))
-  (net/write client "Hi man!\n")
-  (net/write client "How are you?")
-  (net/write client proto/end)
-  (l (net/read client 1024)))
+  (forever
+    (def msg (getline "to echo: "))
+    (:write client msg)
+    (if (get (proto/parse msg) 1) (break))
+    (l (:read client 1024))))

@@ -1,4 +1,4 @@
-# Example tcp server. All code taken from juv test
+# Example tcp server.
 (import ./proto)
 (import ./log)
 
@@ -12,11 +12,17 @@
   (net/write stream "Hi, I will repeat anything you will say!\n")
   (var cont true)
   (while cont
-    (def res (net/read stream 1024))
-    (def [message end] (proto/parse res))
-    (net/write stream (string "You said: " message))
-    (set cont (not end)))
+    (def res (tracev (net/read stream 1024)))
+    (if res
+      (do
+        (def [message end] (proto/parse res))
+        (net/write stream (string "You said: " message))
+        (if end
+          (set cont false)
+          (print "Other side said " message)))
+      (set cont false)))
   (l "Closed"))
 
-(l "started")
-(net/server host port handler)
+(defn main [&]
+  (l "started")
+  (net/server host port handler))
