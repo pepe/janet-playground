@@ -1,5 +1,5 @@
 # janet -l ./playground/eventures
-(comment (import ./playground/eventures :as e :fresh true))
+# (import ./playground/eventures :as e :fresh true)
 
 (defn run-supervised []
   ```
@@ -10,26 +10,29 @@
   ```
   (def c (ev/chan))
   (defn handler [stream]
-    (fn [stream]
-      (def req (:read stream 32))
-      (if (string/find "die" req)
-        (ev/give-supervisor :dying)
-        (ev/give-supervisor :received req))
-      (net/close stream)))
-  (ev/go
-    (coro
-      (net/server "localhost" "8000" handler)) nil c)
+    (def req (:read stream 1024))
+    (if (string/find "die" req)
+      (ev/give-supervisor :dying)
+      (ev/give-supervisor :received req))
+    (net/close stream))
+  (def server (net/listen "localhost" "8000"))
+  (def fib
+    (ev/go
+      (fiber/new
+        (fn []
+          (ev/give-supervisor :running)
+          (forever (handler (net/accept server)))) :tp) nil c))
   (forever
     (match (ev/take c)
-      [:received req] (pp req)
-      [:ok fiber] (pp "Server is running")
-      [:dying] (do (pp "OK. Going down.") (break)))))
-
+      [:received req] (do (print "Received") (pp req))
+      [:running] (pp "Server is running")
+      [:dying] (do (pp "OK. Going down.") (break))))
+  (ev/cancel fib "Called die"))
 
 (defn pipe-thread []
   ```
   This is simple example of communication with thread running in event loop
-  through the `os/pipe` .
+  through the `os/pipe`.
   It will print four random bytes from /dev/urandom.
   ```
   (def [i o] (os/pipe))
@@ -47,7 +50,8 @@
   ```
   This is simple example of communication with many threads running
   in event loop through the `os/pipe` .
-  Takes optional number of threads to spin, default is 4. Try 128.
+  Takes optional number of threads to spin, default is 4. Try 128. About 256
+  is limit before there is problem with pipe opening.
   It will print tuple with thread id and four random bytes from /dev/urandom
   by thread.
   ```
@@ -64,8 +68,7 @@
               (var res @"")
               (with [f (file/open "/dev/urandom" :r)]
                 (file/read f 4 res))
-              (ev/write o (marshal [j res]))
-              (eprint "done " j)))
+              (ev/write o (marshal [j res]))))
           (ev/give-supervisor :read (unmarshal (ev/read i 32))))
         :tp)
       nil chan))
