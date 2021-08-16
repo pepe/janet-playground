@@ -12,8 +12,6 @@ dependencies. To run any script `cd playground`.
 
 ### TCP communication
 
-This is deprecated in favor of `net/`
-
 You can run simple echo server with `janet tcp-server.janet`. Server is
 implemented with [juv].
 
@@ -23,23 +21,6 @@ library in file `proto.janet`.
 
 Second approach is to run `janet tcp-client.janet` which should communicate with
 the server.
-
-### Circlet server
-
-You can run simple http server with `janet http-server.janet`. Then open
-http://localhost:8130/ to the site. Benchmarking the "/" path I can get 25
-Kreq/s on my desktop computer with `wrk` and 10 concurent connections.
-
-Next url: http://localhost:8130/playground is more involved as it uses Cookies!
-
-#### SQLite
-
-If you want to try [sqlite] integration with [circlet], you have to run
-`janet setup-sqlite.janet`, which will recreate sample DB. Then on the url:
-http://localhost:8130/people is list of the records from the DB in html. If you
-use curl with json content type, you will receive JSON representation of it:
-`curl -H "Accept: application/json" http://localhost:8130/people`
-
 
 ### cUrl download with jurl
 
@@ -63,21 +44,12 @@ Simple tree walker implemented with `walk` fn from [Janet] standart library.
 
 Simple implementation of `cond->` and `cond->>` ala clojure.
 
+### Eventures
+
+Adventures in the ev module.
+
 
 [Janet]: https://janet-lang.org/index.html
-[juv]: https://github.com/janet-lang/juv
-[circlet]: https://github.com/janet-lang/circlet
 [PEG]: https://janet-lang.org/docs/peg.html
 [jurl]: https://github.com/sepisoad/jurl
-[sqlite]: https://github.com/janet-lang/sqlite3
 
-## TODO:
-- [ ] add argparse example
-- [ ] add path example
-- [x] refactor
-- [x] add json example
-- [x] add SQLite example
-- [x] add links
-- [x] add usage
-- [x] add tcp client example
-- [x] add circlet example
