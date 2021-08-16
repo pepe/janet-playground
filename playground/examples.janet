@@ -101,3 +101,37 @@
 (def b @"")
 (def v (* 1000 (math/random)))
 (xprintf b "Value reached level %f" v)
+
+
+(defn walker
+  `Simple walker function, that prints non-sequential
+   members of the form and walks recursively sequential
+   members of the tree`
+  [form]
+  (if (or (indexed? form) (dictionary? form))
+    (do (print "Sequence")
+      (walk walker form))
+    (print form)))
+
+(walk walker [[[[0 1 3]] 16 7 [3 [3 5]] 3 4] 1 [3 4]])
+
+# Sequence
+# Sequence
+# Sequence
+# 0
+# 1
+# 3
+# 16
+# 7
+# Sequence
+# 3
+# Sequence
+# 3
+# 5
+# 3
+# 4
+# 1
+# Sequence
+# 3
+# 4
+
