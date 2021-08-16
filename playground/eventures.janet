@@ -73,23 +73,20 @@
   (loop [_ :range [0 (* 2 n)]]
     (pp (ev/take chan))))
 
-(defn threads-chan [&opt n]
-  ```
-  This function is the simple example of the thread-chan in event loop.
-  Takes optional number of threads to spin, default is 4.
-  It prints the thread working and at the end the value computed.
-   ```
+(defn thread-chan-supervisor [&opt n]
   (default n 4)
-  (def chan (ev/thread-chan n))
+  (def chan (ev/thread-chan (* 2 n)))
   (loop [j :range [0 n]]
-    (ev/thread
-      (coro
-        (print "Thread #" j)
-        (ev/give chan
-                 (reduce (fn [a i] (+ a i)) 0
-                         (seq [i :range [0 (math/pow 10 (min 8 j))]]
-                           (math/random)))))
-      nil :n))
-  (ev/do-thread
-    (loop [_ :range [0 n]]
-      (print "from the thread " (describe (ev/take chan))))))
+    (ev/go
+      (fiber-fn
+        :tp
+        (ev/sleep 1)
+        (ev/spawn-thread
+          (var res @"")
+          (with [f (file/open "/dev/urandom" :r)]
+            (ev/give-supervisor (file/read f 4 res)))
+          (ev/give-supervisor res)
+          (print "done")))
+      nil chan))
+  (loop [_ :range [0 (* 2 n)]]
+    (pp (ev/take chan))))
