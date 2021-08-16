@@ -36,14 +36,13 @@
   It will print four random bytes from /dev/urandom.
   ```
   (def [i o] (os/pipe))
-  (ev/thread
-    (coro
-      (var res @"")
-      (with [f (file/open "/dev/urandom" :r)]
-        (file/read f 4 res))
-      (ev/write o res)
-      (ev/close o)
-      (print "done")))
+  (ev/do-thread
+    (var res @"")
+    (with [f (file/open "/dev/urandom" :r)]
+      (file/read f 4 res))
+    (ev/write o res)
+    (ev/close o)
+    (print "done"))
   (pp (ev/read i 4)))
 
 (defn pipe-threads [&opt n]
@@ -63,14 +62,34 @@
       (fiber/new
         (fn []
           (def [i o] (os/pipe))
-          (ev/thread
-            (coro
-              (var res @"")
-              (with [f (file/open "/dev/urandom" :r)]
-                (file/read f 4 res))
-              (ev/write o (marshal [j res]))))
+          (ev/do-thread
+            (var res @"")
+            (with [f (file/open "/dev/urandom" :r)]
+              (file/read f 4 res))
+            (ev/write o (marshal [j res])))
           (ev/give-supervisor :read (unmarshal (ev/read i 32))))
         :tp)
       nil chan))
   (loop [_ :range [0 (* 2 n)]]
     (pp (ev/take chan))))
+
+(defn threads-chan [&opt n]
+  ```
+  This function is the simple example of the thread-chan in event loop.
+  Takes optional number of threads to spin, default is 4.
+  It prints the thread working and at the end the value computed.
+   ```
+  (default n 4)
+  (def chan (ev/thread-chan n))
+  (loop [j :range [0 n]]
+    (ev/thread
+      (coro
+        (print "Thread #" j)
+        (ev/give chan
+                 (reduce (fn [a i] (+ a i)) 0
+                         (seq [i :range [0 (math/pow 10 (min 8 j))]]
+                           (math/random)))))
+      nil :n))
+  (ev/do-thread
+    (loop [_ :range [0 n]]
+      (print "from the thread " (describe (ev/take chan))))))
