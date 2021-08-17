@@ -77,16 +77,16 @@
   (default n 4)
   (def chan (ev/thread-chan (* 2 n)))
   (loop [j :range [0 n]]
-    (ev/go
+    (ev/thread
       (fiber-fn
         :tp
-        (ev/sleep 1)
-        (ev/spawn-thread
-          (var res @"")
-          (with [f (file/open "/dev/urandom" :r)]
-            (ev/give-supervisor (file/read f 4 res)))
-          (ev/give-supervisor res)
-          (print "done")))
-      nil chan))
-  (loop [_ :range [0 (* 2 n)]]
-    (pp (ev/take chan))))
+        (var res @"")
+        (with [f (file/open "/dev/urandom" :r)]
+          (file/read f 4 res))
+        (ev/give-supervisor :rand res))
+      nil :n chan))
+  (ev/do-thread
+    (loop [_ :range [0 (* 2 n)]]
+      (match (ev/take chan)
+        [:ok f] (print "Thread finished")
+        [:rand r] (print "Got random string " (describe r))))))
