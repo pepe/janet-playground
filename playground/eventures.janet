@@ -84,12 +84,11 @@
   (loop [j :range [0 n]]
     (ev/thread
       (coro
-        (print "Thread #" j)
-        (ev/give chan
-                 (reduce (fn [a i] (+ a i)) 0
-                         (seq [i :range [0 (math/pow 10 (min 8 j))]]
-                           (math/random)))))
+        (print "Thread #" j " starts")
+        (var res 0)
+        (repeat (math/pow 10 (min 8 j)) (+= res (math/random)))
+        (ev/give chan [j res]))
       nil :n))
   (ev/do-thread
-    (loop [_ :range [0 n]]
-      (print "from the thread " (describe (ev/take chan))))))
+    (loop [_ :range [0 n] :let [t (ev/take chan)]]
+      (print "from the thread " (t 0) " I got " (describe (t 1))))))
