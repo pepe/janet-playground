@@ -93,3 +93,26 @@
   (ev/do-thread
     (loop [_ :range [0 n]]
       (print "from the thread " (describe (ev/take chan))))))
+
+(defn thread-chan-supervisor [&opt n]
+  ```
+  This function uses thread-chan as a supervisor chan for threads.
+  It takes optional number of threads to spin, default is 4.
+  It prints the random string from the thread and thread finish.
+  ```
+  (default n 4)
+  (def chan (ev/thread-chan (* 2 n)))
+  (loop [j :range [0 n]]
+    (ev/thread
+      (fiber-fn
+        :tp
+        (ev/give-supervisor
+          :rand (reduce (fn [a i] (+ a i)) 0
+                        (seq [i :range [0 (math/pow 10 (min 8 j))]]
+                          (math/random)))))
+      nil :n chan))
+  (ev/do-thread
+    (loop [_ :range [0 (* 2 n)]]
+      (match (ev/take chan)
+        [:ok f] (print "Thread finished")
+        [:rand r] (print "Got random string " (describe r))))))
