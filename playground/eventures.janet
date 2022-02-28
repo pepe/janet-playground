@@ -110,8 +110,7 @@
                         (seq [i :range [0 (math/pow 10 (min 8 j))]]
                           (math/random)))))
       nil :n chan))
-  (ev/do-thread
-    (loop [_ :range [0 (* 2 n)]]
-      (match (ev/take chan)
-        [:ok f] (print "Thread finished")
-        [:rand r] (print "Got random string " (describe r))))))
+  (loop [_ :range [0 (* 2 n)]]
+    (match (ev/take chan)
+      [:ok f] (print "Thread finished")
+      [:rand r] (print "Got random string " (describe r)))))
