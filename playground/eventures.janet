@@ -35,10 +35,12 @@
   through the `os/pipe`.
   It will print four random bytes from /dev/urandom.
   ```
+  (if (= :windows (os/which)) (error "No love on Windows for /dev/random"))
   (def [i o] (os/pipe))
   (ev/do-thread
     (var res @"")
     (with [f (file/open "/dev/urandom" :r)]
+    (tracev f)
       (file/read f 4 res))
     (ev/write o res)
     (ev/close o)
@@ -54,6 +56,7 @@
   It will print tuple with thread id and four random bytes from /dev/urandom
   by thread.
   ```
+  (if (= :windows (os/which)) (error "No love on Windows for /dev/random"))
   (default n 4)
   (def os @[])
   (def chan (ev/chan n))
@@ -76,10 +79,10 @@
 (defn threads-chan [&opt n]
   ```
   This function is the simple example of the thread-chan in event loop.
-  Takes optional number of threads to spin, default is 4.
+  Takes optional number of threads to spin, default is 8.
   It prints the thread working and at the end the value computed.
    ```
-  (default n 4)
+  (default n 8)
   (def chan (ev/thread-chan n))
   (loop [j :range [0 n]]
     (ev/thread
@@ -91,26 +94,26 @@
       nil :n))
   (ev/do-thread
     (loop [_ :range [0 n]]
-      (print "from the thread " (describe (ev/take chan))))))
+      (printf "from the thread %i %f" ;(ev/take chan)))))
 
 (defn thread-chan-supervisor [&opt n]
   ```
   This function uses thread-chan as a supervisor chan for threads.
-  It takes optional number of threads to spin, default is 4.
+  It takes optional number of threads to spin, default is 8.
   It prints the random string from the thread and thread finish.
   ```
-  (default n 4)
+  (default n 8)
   (def chan (ev/thread-chan (* 2 n)))
   (loop [j :range [0 n]]
     (ev/thread
       (fiber-fn
         :tp
         (ev/give-supervisor
-          :rand (reduce (fn [a i] (+ a i)) 0
-                        (seq [i :range [0 (math/pow 10 (min 8 j))]]
-                          (math/random)))))
+          :rand [j (reduce (fn [a i] (+ a i)) 0
+                         (seq [i :range [0 (math/pow 10 (min 8 j))]]
+                           (math/random)))]))
       nil :n chan))
   (loop [_ :range [0 (* 2 n)]]
     (match (ev/take chan)
-      [:ok f] (print "Thread finished")
-      [:rand r] (print "Got random string " (describe r)))))
+      [:ok _] (print "Thread finished")
+      [:rand [j r]] (printf "From thread %i got random %j" j r))))

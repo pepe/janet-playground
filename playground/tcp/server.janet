@@ -1,28 +1,26 @@
 # Example tcp server.
+(use /playground/log)
 (import ./proto)
-(import ./log)
 
 (def host "localhost")
 (def port 8000)
 
-(defn l [& what] (log/debug :server (string ;what)))
 
 (defn handler [stream]
-  (l "Connection ")
+  (log :server "Client connected")
   (net/write stream "Hi, I will repeat anything you will say!\n")
-  (var cont true)
-  (while cont
-    (def res (tracev (net/read stream 1024)))
+  (forever
+    (def res (net/read stream 1024))
     (if res
       (do
         (def [message end] (proto/parse res))
         (net/write stream (string "You said: " message))
         (if end
-          (set cont false)
-          (print "Other side said " message)))
-      (set cont false)))
-  (l "Closed"))
+          (break)
+          (log :server "Other side said " message)))
+      (break)))
+  (log :server "Closed"))
 
 (defn main [&]
-  (l "started")
+  (log :server "Server started")
   (net/server host port handler))

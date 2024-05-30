@@ -1,32 +1,26 @@
 # Janet Programming language playground
 
-Here I will put code as I am learning Janet Programming language. There is
-almost nothing to see here now.
+This repository contains code which demonstrates some of the features 
+of the Janet programming language.
 
 ## Usage
 
 You will need [Janet] programming language installed on your computer.
 
-Clone this repo, and `cd` to it. Then run `[sudo] jpm deps` do download
-dependencies. To run any script `cd playground`.
+Clone this repo, and `cd` to it. Then run `jpm -l deps` to download
+`spork` dependency.
 
 ### TCP communication
 
-You can run simple echo server with `janet tcp-server.janet`. Server is
-implemented with [juv].
+You can run simple echo server with `janet playground/tcp/server.janet`. Server is
+implemented with core network capabilities.
 
 You can connect to it with `telnet localhost 8120`. You will receive instruction
 for server controll. Protocol is defined with [PEG] from [Janet] standart
 library in file `proto.janet`.
 
-Second approach is to run `janet tcp-client.janet` which should communicate with
-the server.
-
-### cUrl download with jurl
-
-Example of using [jurl] library in `basic-jurl.janet` program. You can run it
-with `janet basic-jurl.janet`. It will show you http://www.google.com content
-(oh no it is full of JS) and download some happy tunes.
+Second approach is to run `janet playground/tcp/client.janet` which should communicate
+with the server.
 
 ### PEG
 
@@ -39,10 +33,6 @@ language.
 ### Numbers walking
 
 Simple tree walker implemented with `walk` fn from [Janet] standart library.
-
-### Condarr
-
-Simple implementation of `cond->` and `cond->>` ala clojure.
 
 ### Eventures
 
