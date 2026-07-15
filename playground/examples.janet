@@ -135,3 +135,25 @@
 # 3
 # 4
 
+# match: pattern matching with binding, guards, and structures
+(match [1 2 3]
+  [1 x y] (+ x y) # binds x and y from the tuple
+  _ :no)
+# => 5
+
+(match 42
+  (x (even? x)) :even # a guard: pattern plus a predicate
+  _ :odd)
+# => :even
+
+(match {:type :circle :r 5}
+  {:type :circle :r r} (* math/pi r r) # match a struct by keys
+  {:type :square :s s} (* s s)
+  _ :unknown)
+# => 78.5398163397448
+
+(match :b
+  :a 1
+  :b 2
+  _ 0) # _ is the fallthrough case
+# => 2
