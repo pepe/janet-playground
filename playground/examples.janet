@@ -32,13 +32,15 @@
 (ev/sleep 0.0001) # give ev a chance in the REPL, remove in file
 # => prints 10
 
-(defn worker [m]
-  (thread/send m "Hello function")
-  (:send m "Hello method"))
+(def tchan (ev/thread-chan 10))
 
-(thread/new worker)
-(pp (thread/receive)) # => prints Hello function
-(pp (thread/receive)) # => prints Hello method
+(defn worker [ch]
+  (ev/give ch "Hello function")
+  (:give ch "Hello method"))
+
+(ev/thread worker tchan :n)
+(pp (ev/take tchan)) # => prints Hello function
+(pp (ev/take tchan)) # => prints Hello method
 
 (repeat 3
   (print "HO"))
